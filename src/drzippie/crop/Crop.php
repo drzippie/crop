@@ -138,20 +138,22 @@ abstract class Crop
             throw new \RuntimeException('No image set');
         }
         
+        $image = $this->originalImage;
+        
         if ($this->getAutoOrient()) {
             $this->autoOrient();
         }
 
         // First get the size that we can use to safely trim down the image without cropping any sides
-        $crop = $this->getSafeResizeOffset($this->originalImage, $targetWidth, $targetHeight);
+        $crop = $this->getSafeResizeOffset($image, $targetWidth, $targetHeight);
         // Resize the image
-        $this->originalImage->resizeImage($crop['width'], $crop['height'], $this->getFilter(), $this->getBlur());
+        $image->resizeImage($crop['width'], $crop['height'], $this->getFilter(), $this->getBlur());
         // Get the offset for cropping the image further
-        $offset = $this->getSpecialOffset($this->originalImage, $targetWidth, $targetHeight);
+        $offset = $this->getSpecialOffset($image, $targetWidth, $targetHeight);
         // Crop the image
-        $this->originalImage->cropImage($targetWidth, $targetHeight, $offset['x'], $offset['y']);
+        $image->cropImage($targetWidth, $targetHeight, $offset['x'], $offset['y']);
 
-        return $this->originalImage;
+        return $image;
     }
 
     /**

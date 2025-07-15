@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:raw.githubusercontent.com)"
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(composer test:*)",
+      "Bash(composer:*)",
+      "Bash(./vendor/bin/phpstan analyse src tests --level=8 --memory-limit=1G)",
+      "Bash(./vendor/bin/phpunit:*)"
     ],
     "deny": []
   }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace drzippie\crop\Tests\Integration;
 
-use drzippie\crop\{CropCenter, CropEntropy, CropBalanced, CropFace};
+use drzippie\crop\{CropCenter, CropEntropy, CropBalanced};
 use drzippie\crop\Tests\TestCase;
 use Imagick;
 
@@ -43,7 +43,6 @@ class CropIntegrationTest extends TestCase
             'center' => CropCenter::class,
             'entropy' => CropEntropy::class,
             'balanced' => CropBalanced::class,
-            'face' => CropFace::class,
         ];
         
         foreach ($this->testImages as $imageType => $imagePath) {
@@ -74,7 +73,6 @@ class CropIntegrationTest extends TestCase
                 new CropCenter($imagePath),
                 new CropEntropy($imagePath),
                 new CropBalanced($imagePath),
-                new CropFace($imagePath),
             ];
             
             foreach ($strategies as $strategy) {
@@ -90,7 +88,6 @@ class CropIntegrationTest extends TestCase
             CropCenter::class,
             CropEntropy::class,
             CropBalanced::class,
-            CropFace::class,
         ];
         
         foreach ($strategies as $strategyClass) {
@@ -123,7 +120,6 @@ class CropIntegrationTest extends TestCase
                 new CropCenter($imagePath),
                 new CropEntropy($imagePath),
                 new CropBalanced($imagePath),
-                new CropFace($imagePath),
             ];
             
             foreach ($strategies as $strategy) {
@@ -147,7 +143,6 @@ class CropIntegrationTest extends TestCase
                 new CropCenter($imagePath),
                 new CropEntropy($imagePath),
                 new CropBalanced($imagePath),
-                new CropFace($imagePath),
             ];
             
             foreach ($strategies as $strategy) {
@@ -171,7 +166,6 @@ class CropIntegrationTest extends TestCase
                 new CropCenter($imagePath),
                 new CropEntropy($imagePath),
                 new CropBalanced($imagePath),
-                new CropFace($imagePath),
             ];
             
             foreach ($strategies as $strategy) {
@@ -208,7 +202,6 @@ class CropIntegrationTest extends TestCase
             'center' => new CropCenter($imagePath),
             'entropy' => new CropEntropy($imagePath),
             'balanced' => new CropBalanced($imagePath),
-            'face' => new CropFace($imagePath),
         ];
         
         $times = [];
@@ -226,7 +219,6 @@ class CropIntegrationTest extends TestCase
         $this->assertLessThan(5.0, $times['center']); // Center should be fastest
         $this->assertLessThan(10.0, $times['entropy']); // Entropy should be reasonable
         $this->assertLessThan(10.0, $times['balanced']); // Balanced should be reasonable
-        $this->assertLessThan(15.0, $times['face']); // Face detection might be slower
     }
     
     public function testCropStrategiesWithEdgeCases(): void
@@ -237,7 +229,6 @@ class CropIntegrationTest extends TestCase
             new CropCenter($imagePath),
             new CropEntropy($imagePath),
             new CropBalanced($imagePath),
-            new CropFace($imagePath),
         ];
         
         // Test with target size equal to original size

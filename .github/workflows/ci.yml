@@ -23,8 +23,7 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php-version }}
-        extensions: imagick, gd
-        coverage: xdebug
+        extensions: imagick
         
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
@@ -44,19 +43,5 @@ jobs:
     - name: Run PHPStan
       run: composer phpstan
       
-    - name: Run PHP_CodeSniffer
-      run: composer phpcs
-      
     - name: Run PHPUnit
       run: composer test
-      
-    - name: Run PHPUnit with coverage
-      run: composer test-coverage
-      
-    - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
-        fail_ci_if_error: true

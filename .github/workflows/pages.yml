@@ -1,0 +1,67 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.1'
+        bundler-cache: true
+        
+    - name: Setup Pages
+      id: pages
+      uses: actions/configure-pages@v3
+      
+    - name: Install dependencies
+      run: |
+        echo "source 'https://rubygems.org'" > Gemfile
+        echo "gem 'jekyll', '~> 4.3'" >> Gemfile
+        echo "gem 'minima', '~> 2.5'" >> Gemfile
+        echo "gem 'jekyll-feed', '~> 0.12'" >> Gemfile
+        echo "gem 'jekyll-sitemap', '~> 1.4'" >> Gemfile
+        echo "gem 'jekyll-seo-tag', '~> 2.6'" >> Gemfile
+        bundle install
+        
+    - name: Build with Jekyll
+      run: bundle exec jekyll build --source docs --destination _site
+      env:
+        JEKYLL_ENV: production
+        
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v2
+      with:
+        path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+      
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v2

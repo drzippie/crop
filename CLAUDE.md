@@ -14,9 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `phpunit tests/Unit/CropCenterTest.php` - Run specific test class
 
 ### Code Quality
-- `make phpstan` or `composer phpstan` - Run PHPStan static analysis
-- `make phpcs` or `composer phpcs` - Run PHP CodeSniffer (PSR-12 standard)
-- `make phpcbf` or `composer phpcbf` - Auto-fix code style issues
+- `make phpstan` or `composer phpstan` - Run PHPStan static analysis (level 8)
 
 ### Legacy Build Tools
 - `phing` - Run default build target (includes phpcs + docgen)
@@ -35,10 +33,9 @@ This is a PHP library for intelligent image cropping using ImageMagick. The libr
   - Base resize/crop workflow in `resizeAndCrop()`
 
 ### Cropping Strategies
-- **`drzippie\crop\CropCenter`**: Simple center-based cropping
+- **`drzippie\crop\CropCenter`**: Simple center-based cropping (fastest)
 - **`drzippie\crop\CropEntropy`**: Crops based on image entropy (edge detection) to preserve high-energy areas
 - **`drzippie\crop\CropBalanced`**: Divides image into quadrants and finds weighted center of interest
-- **`drzippie\crop\CropFace`**: Extends CropEntropy but protects detected faces from being cropped out (uses pure PHP HAARPHP library)
 
 ### Key Architecture Patterns
 - **Template Method**: The base `Crop` class defines the overall workflow in `resizeAndCrop()`, while concrete classes implement `getSpecialOffset()` to provide their specific cropping logic
@@ -48,7 +45,6 @@ This is a PHP library for intelligent image cropping using ImageMagick. The libr
 ### Dependencies
 - PHP 8.3+
 - ImageMagick extension (sRGB colorspace, version 6.7.5-5 or higher)
-- GD extension (for `CropFace` only)
 
 ### Testing
 - **PHPUnit 11+** with modern test suite architecture

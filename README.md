@@ -1,9 +1,18 @@
 # Crop
 
+[![CI Status](https://github.com/drzippie/crop/workflows/CI/badge.svg)](https://github.com/drzippie/crop/actions)
+[![PHPStan Level](https://img.shields.io/badge/PHPStan-level%208-brightgreen.svg)](https://phpstan.org/)
+[![PHP Version](https://img.shields.io/badge/PHP-8.3%2B-blue.svg)](https://php.net)
+[![License](https://img.shields.io/github/license/drzippie/crop.svg)](https://github.com/drzippie/crop/blob/master/LICENCE)
+[![Latest Stable Version](https://img.shields.io/packagist/v/drzippie/crop.svg)](https://packagist.org/packages/drzippie/crop)
+[![Total Downloads](https://img.shields.io/packagist/dt/drzippie/crop.svg)](https://packagist.org/packages/drzippie/crop)
+
 This is a maintained fork of the original [stojg/crop](https://github.com/stojg/crop) library, which was archived on April 30, 2021. This fork continues development and adds modern improvements.
 
 **Key enhancements in this fork:**
-- ✅ Pure PHP face detection (no external extensions required)
+- ✅ Modern PHP 8.3+ compatibility with strict typing
+- ✅ Comprehensive test suite with PHPUnit 11+
+- ✅ PHPStan level 8 compliance for type safety
 - ✅ Modernized dependencies and compatibility
 - ✅ Active maintenance and bug fixes
 
@@ -13,11 +22,10 @@ This is a small set of image croppers for automated cropping with intelligent al
 
  - PHP 8.3 or higher
  - ImageMagick extension with sRGB colorspace (version 6.7.5-5 or higher)
- - GD extension (for face detection)
 
 ## Description
 
-This little project includes three functional image cropers:
+This project includes three intelligent image cropping algorithms:
 
 ### CropCenter
 
@@ -47,17 +55,48 @@ Crop balanced is a variant of CropEntropy where I tried to the cropping a bit mo
   2. Find the most energetic point per square
   3. Finding the images weighted mean interest point for all squares
 
-### CropFace
-
-Crop face uses a pure PHP implementation of the Haar cascade algorithm for face detection.
-
-In details, the FaceCrop uses Entropy Crop but puts blocking "limits" on the faces.
-If the program faces two limits, we let the entropy decide the best crop.
-
-
 ## Usage
-``` php
-$center = new \drzippie\crop\CropCenter($filepath);
+
+### Basic Usage
+
+```php
+use drzippie\crop\{CropCenter, CropEntropy, CropBalanced};
+
+// Center-based cropping (fastest)
+$center = new CropCenter($filepath);
 $croppedImage = $center->resizeAndCrop($width, $height);
 $croppedImage->writeimage('assets/thumbs/cropped-center.jpg');
+
+// Entropy-based cropping (intelligent edge detection)
+$entropy = new CropEntropy($filepath);
+$croppedImage = $entropy->resizeAndCrop($width, $height);
+$croppedImage->writeimage('assets/thumbs/cropped-entropy.jpg');
+
+// Balanced cropping (weighted center of interest)
+$balanced = new CropBalanced($filepath);
+$croppedImage = $balanced->resizeAndCrop($width, $height);
+$croppedImage->writeimage('assets/thumbs/cropped-balanced.jpg');
+```
+
+### Advanced Usage
+
+```php
+use drzippie\crop\CropEntropy;
+
+// Create cropper with custom settings
+$crop = new CropEntropy();
+$crop->setImage($imagickObject)
+     ->setFilter(Imagick::FILTER_LANCZOS)
+     ->setBlur(0.8)
+     ->setAutoOrient(true);
+
+$result = $crop->resizeAndCrop(300, 200);
+```
+
+## Installation
+
+Install via Composer:
+
+```bash
+composer require drzippie/crop
 ```

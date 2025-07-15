@@ -100,3 +100,7 @@ Install via Composer:
 ```bash
 composer require drzippie/crop
 ```
+
+## Documentation
+
+📖 **[Complete Documentation](https://drzippie.github.io/crop/)** - GitHub Pages with full API reference and examples

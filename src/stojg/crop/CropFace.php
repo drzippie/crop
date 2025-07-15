@@ -2,19 +2,19 @@
 
 namespace stojg\crop;
 
+use stojg\crop\haar\HaarDetector;
+
 /**
  * CropFace
  *
  * This class will try to find the most interesting point in the image by trying to find a face and
- * center the crop on that
+ * center the crop on that. Uses HAARPHP library for pure PHP face detection.
  *
- * @todo implement
- * @see https://github.com/mauricesvay/php-facedetection/blob/master/FaceDetector.php
  */
 class CropFace extends CropEntropy
 {
-    const CLASSIFIER_FACE = '/classifier/haarcascade_frontalface_default.xml';
-    const CLASSIFIER_PROFILE = '/classifier/haarcascade_profileface.xml';
+    const CLASSIFIER_FACE = '/haar/frontalface_default.php';
+    const CLASSIFIER_PROFILE = '/haar/profileface.php';
 
     /**
      * imagePath original image path
@@ -70,9 +70,8 @@ class CropFace extends CropEntropy
      */
     protected function getFaceList()
     {
-        if (!function_exists('face_detect')) {
-            $msg = 'PHP Facedetect extension must be installed.
-                    See http://www.xarg.org/project/php-facedetect/ for more details';
+        if (!extension_loaded('gd')) {
+            $msg = 'GD extension must be installed for face detection.';
             throw new \Exception($msg);
         }
 
@@ -101,12 +100,75 @@ class CropFace extends CropEntropy
      */
     protected function getFaceListFromClassifier($classifier)
     {
-        $faceList = face_detect($this->imagePath, __DIR__ . $classifier);
-        if (!$faceList) {
-            $faceList = array();
+        $cascadeFile = __DIR__ . $classifier;
+        
+        if (!file_exists($cascadeFile)) {
+            return array();
         }
-
+        
+        $cascadeData = include $cascadeFile;
+        if (!$cascadeData) {
+            return array();
+        }
+        
+        // Load image using GD
+        $gdImage = $this->loadGDImage($this->imagePath);
+        if (!$gdImage) {
+            return array();
+        }
+        
+        // Create HaarDetector instance
+        $detector = new HaarDetector($cascadeData);
+        
+        // Set image and detect faces
+        $detector->image($gdImage);
+        $detector->detect(1.0, 1.2, 0.1, 1, 0.2, true);
+        
+        $objects = $detector->getObjects();
+        
+        // Convert to expected format (x, y, w, h)
+        $faceList = array();
+        foreach ($objects as $object) {
+            $faceList[] = array(
+                'x' => $object['x'],
+                'y' => $object['y'],
+                'w' => $object['width'],
+                'h' => $object['height']
+            );
+        }
+        
+        imagedestroy($gdImage);
+        
         return $faceList;
+    }
+    
+    /**
+     * Load image using GD library
+     *
+     * @param string $imagePath
+     * @return resource|false
+     */
+    protected function loadGDImage($imagePath)
+    {
+        if (!file_exists($imagePath)) {
+            return false;
+        }
+        
+        $info = getimagesize($imagePath);
+        if (!$info) {
+            return false;
+        }
+        
+        switch ($info[2]) {
+            case IMAGETYPE_JPEG:
+                return imagecreatefromjpeg($imagePath);
+            case IMAGETYPE_PNG:
+                return imagecreatefrompng($imagePath);
+            case IMAGETYPE_GIF:
+                return imagecreatefromgif($imagePath);
+            default:
+                return false;
+        }
     }
 
     /**

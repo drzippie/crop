@@ -30,11 +30,6 @@ jobs:
     - name: Run PHPStan
       run: composer phpstan
       
-    - name: Update Packagist
-      run: |
-        curl -X POST "https://packagist.org/api/update-package?username=${{ secrets.PACKAGIST_USERNAME }}&apiToken=${{ secrets.PACKAGIST_TOKEN }}" \
-             -d '{"repository":{"url":"https://github.com/drzippie/crop"}}'
-      
     - name: Create release notes
       run: |
         echo "## Release Notes" > release_notes.md

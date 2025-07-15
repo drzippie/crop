@@ -1,16 +1,39 @@
-<phpunit colors="false" backupGlobals="false" backupStaticAttributes="false" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" processIsolation="false" stopOnError="fals
-e" stopOnFailure="false" stopOnIncomplete="false" stopOnSkipped="false" syntaxCheck="false" verbose="true" strict="false">
-
-	<testsuite name="Default">
-		<directory>tests</directory>	
-	</testsuite>
-
-	<filter>
-            <whitelist addUncoveredFilesFromWhitelist="true">
-                <directory suffix=".php">src</directory>
-                <exclude>
-                    <directory suffix=".php">tests/</directory>
-                </exclude>
-    	    </whitelist>
-    </filter>
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.0/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache"
+         executionOrder="depends,defects"
+         testdox="true"
+         beStrictAboutOutputDuringTests="true"
+         beStrictAboutTodoAnnotatedTests="true"
+         failOnRisky="true"
+         failOnWarning="true">
+    
+    <testsuites>
+        <testsuite name="unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="integration">
+            <directory>tests/Integration</directory>
+        </testsuite>
+    </testsuites>
+    
+    <source>
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+    </source>
+    
+    <coverage>
+        <report>
+            <html outputDirectory="coverage-html"/>
+            <text outputFile="php://stdout"/>
+        </report>
+    </coverage>
+    
+    <php>
+        <env name="PHPUNIT_TEST_ENV" value="true"/>
+    </php>
 </phpunit>

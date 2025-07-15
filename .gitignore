@@ -1,1 +1,27 @@
 docs/phpdoc-cache*
+
+# Dependencies
+/vendor/
+composer.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Testing
+.phpunit.cache/
+coverage/
+coverage-html/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp

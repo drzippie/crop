@@ -4,17 +4,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
-### Testing
-- `phpunit` - Run PHPUnit tests
-- `phpunit tests/CropEntropyTest.php` - Run specific test class
+### Setup
+- `make install` or `composer install` - Install dependencies
+- `make dev-setup` - Set up development environment
 
-### Build and Quality
+### Testing
+- `make test` or `composer test` - Run PHPUnit tests
+- `make test-coverage` or `composer test-coverage` - Run tests with coverage report
+- `phpunit tests/Unit/CropCenterTest.php` - Run specific test class
+
+### Code Quality
+- `make phpstan` or `composer phpstan` - Run PHPStan static analysis
+- `make phpcs` or `composer phpcs` - Run PHP CodeSniffer (PSR-12 standard)
+- `make phpcbf` or `composer phpcbf` - Auto-fix code style issues
+
+### Legacy Build Tools
 - `phing` - Run default build target (includes phpcs + docgen)
 - `phing phpcs` - Run PHP CodeSniffer with PSR2 standard
 - `phing docgen` - Generate API documentation
-
-### Dependencies
-- `composer install` - Install dependencies (though this is a minimal library)
 
 ## Architecture Overview
 
@@ -44,6 +51,9 @@ This is a PHP library for intelligent image cropping using ImageMagick. The libr
 - GD extension (for `CropFace` only)
 
 ### Testing
-- Tests use PHPUnit framework
-- Test images are stored in `tests/images/`
-- Tests verify that cropping operations complete without errors and produce expected output files
+- **PHPUnit 11+** with modern test suite architecture
+- **Unit Tests**: Individual class testing in `tests/Unit/`
+- **Integration Tests**: End-to-end testing in `tests/Integration/`
+- **Test Coverage**: HTML and console coverage reports
+- **Test Fixtures**: Sample images in `tests/fixtures/`
+- **CI/CD**: Automated testing with GitHub Actions for PHP 8.3+

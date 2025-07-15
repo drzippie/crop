@@ -1,0 +1,10 @@
+parameters:
+    level: 8
+    paths:
+        - src
+        - tests
+    ignoreErrors:
+        - '#Call to an undefined method Imagick::#'
+        - '#Access to an undefined property Imagick::#'
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false

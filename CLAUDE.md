@@ -39,8 +39,8 @@ This is a PHP library for intelligent image cropping using ImageMagick. The libr
 - **ImageMagick Integration**: All classes work with `\Imagick` objects for image manipulation
 
 ### Dependencies
-- PHP 5.3+
-- ImageMagick (sRGB colorspace, version 6.7.5-5 or higher)
+- PHP 8.3+
+- ImageMagick extension (sRGB colorspace, version 6.7.5-5 or higher)
 - GD extension (for `CropFace` only)
 
 ### Testing

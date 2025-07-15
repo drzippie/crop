@@ -1,47 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 namespace drzippie\crop;
 
+use Imagick;
+
 /**
- * SlyCropEntropy
+ * CropEntropy
  *
  * This class finds the a position in the picture with the most energy in it.
  *
- * Energy is in this case calculated by this
+ * Energy is in this case calculated by this:
  *
  * 1. Take the image and turn it into black and white
  * 2. Run a edge filter so that we're left with only edges.
  * 3. Find a piece in the picture that has the highest entropy (i.e. most edges)
  * 4. Return coordinates that makes sure that this piece of the picture is not cropped 'away'
- *
  */
 class CropEntropy extends Crop
 {
-    const POTENTIAL_RATIO = 1.5;
+    public const POTENTIAL_RATIO = 1.5;
 
     /**
-     * get special offset for class
-     *
-     * @param  \Imagick $original
-     * @param  int      $targetWidth
-     * @param  int      $targetHeight
-     * @return array
+     * Get special offset for class
      */
-    protected function getSpecialOffset(\Imagick $original, $targetWidth, $targetHeight)
+    protected function getSpecialOffset(Imagick $original, int $targetWidth, int $targetHeight): array
     {
         return $this->getEntropyOffsets($original, $targetWidth, $targetHeight);
     }
 
-
     /**
      * Get the topleftX and topleftY that will can be passed to a cropping method.
-     *
-     * @param  \Imagick $original
-     * @param  int      $targetWidth
-     * @param  int      $targetHeight
-     * @return array
      */
-    protected function getEntropyOffsets(\Imagick $original, $targetWidth, $targetHeight)
+    protected function getEntropyOffsets(Imagick $original, int $targetWidth, int $targetHeight): array
     {
         $measureImage = clone($original);
         // Enhance edges
@@ -56,14 +48,8 @@ class CropEntropy extends Crop
 
     /**
      * Get the offset of where the crop should start
-     *
-     * @param  \Imagick $image
-     * @param  int      $targetHeight
-     * @param  int      $targetHeight
-     * @param  int      $sliceSize
-     * @return array
      */
-    protected function getOffsetFromEntropy(\Imagick $originalImage, $targetWidth, $targetHeight)
+    protected function getOffsetFromEntropy(Imagick $originalImage, int $targetWidth, int $targetHeight): array
     {
         // The entropy works better on a blured image
         $image = clone $originalImage;
@@ -77,27 +63,19 @@ class CropEntropy extends Crop
         $leftX = $this->slice($image, $originalWidth, $targetWidth, 'h');
         $topY = $this->slice($image, $originalHeight, $targetHeight, 'v');
 
-        return array('x' => $leftX, 'y' => $topY);
+        return ['x' => $leftX, 'y' => $topY];
     }
 
-
     /**
-     * slice
-     *
-     * @param mixed $image
-     * @param mixed $originalSize
-     * @param mixed $targetSize
-     * @param mixed $axis         h=horizontal, v = vertical
-     * @access protected
-     * @return void
+     * Slice image to find optimal crop position
      */
-    protected function slice($image, $originalSize, $targetSize, $axis)
+    protected function slice(Imagick $image, int $originalSize, int $targetSize, string $axis): int
     {
         $aSlice = null;
         $bSlice = null;
 
         // Just an arbitrary size of slice size
-        $sliceSize = ceil(($originalSize - $targetSize) / 25);
+        $sliceSize = (int) ceil(($originalSize - $targetSize) / 25);
 
         $aBottom = $originalSize;
         $aTop = 0;
@@ -105,7 +83,7 @@ class CropEntropy extends Crop
         // while there still are uninvestigated slices of the image
         while ($aBottom - $aTop > $targetSize) {
             // Make sure that we don't try to slice outside the picture
-            $sliceSize = min($aBottom - $aTop - $targetSize, $sliceSize);
+            $sliceSize = (int) min($aBottom - $aTop - $targetSize, $sliceSize);
 
             // Make a top slice image
             if (!$aSlice) {
@@ -169,32 +147,23 @@ class CropEntropy extends Crop
     }
 
     /**
-     * getSafeZoneList
-     *
-     * @access protected
-     * @return array
+     * Get safe zone list
      */
-    protected function getSafeZoneList()
+    protected function getSafeZoneList(): array
     {
-        return array();
+        return [];
     }
 
     /**
-     * getPotential
-     *
-     * @param mixed $position
-     * @param mixed $top
-     * @param mixed $sliceSize
-     * @access protected
-     * @return void
+     * Get potential
      */
-    protected function getPotential($position, $top, $sliceSize)
+    protected function getPotential(string $position, int $top, int $sliceSize): float
     {
         $safeZoneList = $this->getSafeZoneList();
 
         $safeRatio = 0;
 
-        if ($position == 'top' || $position == 'left') {
+        if ($position === 'top' || $position === 'left') {
             $start = $top;
             $end = $top + $sliceSize;
         } else {
@@ -204,7 +173,7 @@ class CropEntropy extends Crop
 
         for ($i = $start; $i < $end; $i++) {
             foreach ($safeZoneList as $safeZone) {
-                if ($position == 'top' || $position == 'bottom') {
+                if ($position === 'top' || $position === 'bottom') {
                     if ($safeZone['top'] <= $i && $safeZone['bottom'] >= $i) {
                         $safeRatio = max($safeRatio, ($safeZone['right'] - $safeZone['left']));
                     }
@@ -223,14 +192,8 @@ class CropEntropy extends Crop
      * Calculate the entropy for this image.
      *
      * A higher value of entropy means more noise / liveliness / color / business
-     *
-     * @param  \Imagick $image
-     * @return float
-     *
-     * @see http://brainacle.com/calculating-image-entropy-with-python-how-and-why.html
-     * @see http://www.mathworks.com/help/toolbox/images/ref/entropy.html
      */
-    protected function grayscaleEntropy(\Imagick $image)
+    protected function grayscaleEntropy(Imagick $image): float
     {
         // The histogram consists of a list of 0-254 and the number of pixels that has that value
         $histogram = $image->getImageHistogram();
@@ -243,14 +206,11 @@ class CropEntropy extends Crop
      *
      * If the source image is in color we need to transform RGB into a grayscale image
      * so we can calculate the entropy more performant.
-     *
-     * @param  \Imagick $image
-     * @return float
      */
-    protected function colorEntropy(\Imagick $image)
+    protected function colorEntropy(Imagick $image): float
     {
         $histogram = $image->getImageHistogram();
-        $newHistogram = array();
+        $newHistogram = [];
 
         // Translates a color histogram into a bw histogram
         $colors = count($histogram);

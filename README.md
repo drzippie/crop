@@ -11,8 +11,9 @@ This is a small set of image croppers for automated cropping with intelligent al
 
 ## Requirements
 
- - PHP 5.3
- - Imagemagick where the default colorspace being sRGB (ver 6.7.5-5 or higher)
+ - PHP 8.3 or higher
+ - ImageMagick extension with sRGB colorspace (version 6.7.5-5 or higher)
+ - GD extension (for face detection)
 
 ## Description
 

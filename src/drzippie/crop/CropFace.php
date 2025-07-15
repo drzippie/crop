@@ -1,87 +1,54 @@
 <?php
 
+declare(strict_types=1);
+
 namespace drzippie\crop;
 
 use drzippie\crop\haar\HaarDetector;
+use Imagick;
+use Exception;
 
 /**
  * CropFace
  *
  * This class will try to find the most interesting point in the image by trying to find a face and
  * center the crop on that. Uses HAARPHP library for pure PHP face detection.
- *
  */
 class CropFace extends CropEntropy
 {
-    const CLASSIFIER_FACE = '/haar/frontalface_default.php';
-    const CLASSIFIER_PROFILE = '/haar/profileface.php';
+    public const CLASSIFIER_FACE = '/haar/frontalface_default.php';
+    public const CLASSIFIER_PROFILE = '/haar/profileface.php';
 
-    /**
-     * imagePath original image path
-     *
-     * @var mixed
-     * @access protected
-     */
-    protected $imagePath;
+    protected string $imagePath;
+    protected array $safeZoneList = [];
+    protected ?int $maxExecutionTime = null;
 
-    /**
-     * safeZoneList
-     *
-     * @var array
-     * @access protected
-     */
-    protected $safeZoneList;
-
-    /**
-     * max execution time (in seconds)
-     *
-     * @var int
-     * @access protected
-     */
-    protected $maxExecutionTime;
-
-    /**
-     *
-     * @param string $imagePath
-     */
-    public function __construct($imagePath)
+    public function __construct(string $imagePath)
     {
         $this->imagePath = $imagePath;
         parent::__construct($imagePath);
     }
 
     /**
-     * setMaxExecutionTime
-     *
-     * @param int $maxExecutionTime max execution time (in sec)
-     * @access public
-     * @return void
+     * Set max execution time
      */
-    public function setMaxExecutionTime($maxExecutionTime)
+    public function setMaxExecutionTime(int $maxExecutionTime): void
     {
         $this->maxExecutionTime = $maxExecutionTime;
     }
 
     /**
-     * getFaceList get faces positions and sizes
-     *
-     * @access protected
-     * @return array
+     * Get faces positions and sizes
      */
-    protected function getFaceList()
+    protected function getFaceList(): array
     {
         if (!extension_loaded('gd')) {
-            $msg = 'GD extension must be installed for face detection.';
-            throw new \Exception($msg);
+            throw new Exception('GD extension must be installed for face detection.');
         }
 
-        if ($this->maxExecutionTime) {
-            $timeBefore = microtime(true);
-        }
+        $timeBefore = $this->maxExecutionTime ? microtime(true) : null;
         $faceList = $this->getFaceListFromClassifier(self::CLASSIFIER_FACE);
-        if ($this->maxExecutionTime) {
-            $timeSpent = microtime(true) - $timeBefore;
-        }
+        $timeSpent = $timeBefore ? microtime(true) - $timeBefore : 0;
 
         if (!$this->maxExecutionTime || $timeSpent < ($this->maxExecutionTime / 2)) {
             $profileList = $this->getFaceListFromClassifier(self::CLASSIFIER_PROFILE);
@@ -92,29 +59,25 @@ class CropFace extends CropEntropy
     }
 
     /**
-     * getFaceListFromClassifier
-     *
-     * @param string $classifier
-     * @access protected
-     * @return array
+     * Get face list from classifier
      */
-    protected function getFaceListFromClassifier($classifier)
+    protected function getFaceListFromClassifier(string $classifier): array
     {
         $cascadeFile = __DIR__ . $classifier;
         
         if (!file_exists($cascadeFile)) {
-            return array();
+            return [];
         }
         
         $cascadeData = include $cascadeFile;
         if (!$cascadeData) {
-            return array();
+            return [];
         }
         
         // Load image using GD
         $gdImage = $this->loadGDImage($this->imagePath);
         if (!$gdImage) {
-            return array();
+            return [];
         }
         
         // Create HaarDetector instance
@@ -127,14 +90,14 @@ class CropFace extends CropEntropy
         $objects = $detector->getObjects();
         
         // Convert to expected format (x, y, w, h)
-        $faceList = array();
+        $faceList = [];
         foreach ($objects as $object) {
-            $faceList[] = array(
+            $faceList[] = [
                 'x' => $object['x'],
                 'y' => $object['y'],
                 'w' => $object['width'],
                 'h' => $object['height']
-            );
+            ];
         }
         
         imagedestroy($gdImage);
@@ -144,11 +107,8 @@ class CropFace extends CropEntropy
     
     /**
      * Load image using GD library
-     *
-     * @param string $imagePath
-     * @return resource|false
      */
-    protected function loadGDImage($imagePath)
+    protected function loadGDImage(string $imagePath): \GdImage|false
     {
         if (!file_exists($imagePath)) {
             return false;
@@ -159,29 +119,23 @@ class CropFace extends CropEntropy
             return false;
         }
         
-        switch ($info[2]) {
-            case IMAGETYPE_JPEG:
-                return imagecreatefromjpeg($imagePath);
-            case IMAGETYPE_PNG:
-                return imagecreatefrompng($imagePath);
-            case IMAGETYPE_GIF:
-                return imagecreatefromgif($imagePath);
-            default:
-                return false;
-        }
+        return match ($info[2]) {
+            IMAGETYPE_JPEG => imagecreatefromjpeg($imagePath),
+            IMAGETYPE_PNG => imagecreatefrompng($imagePath),
+            IMAGETYPE_GIF => imagecreatefromgif($imagePath),
+            default => false
+        };
     }
 
     /**
-     * getSafeZoneList
-     *
-     * @access private
-     * @return array
+     * Get safe zone list
      */
-    protected function getSafeZoneList()
+    protected function getSafeZoneList(): array
     {
-        if (!isset($this->safeZoneList)) {
-            $this->safeZoneList = array();
+        if (!$this->originalImage) {
+            return [];
         }
+        
         // the local key is the current image width-height
         $key = $this->originalImage->getImageWidth() . '-' . $this->originalImage->getImageHeight();
 
@@ -192,23 +146,23 @@ class CropFace extends CropEntropy
             $xRatio = $this->getBaseDimension('width') / $this->originalImage->getImageWidth();
             $yRatio = $this->getBaseDimension('height') / $this->originalImage->getImageHeight();
 
-            $safeZoneList = array();
+            $safeZoneList = [];
             foreach ($faceList as $face) {
                 $hw = ceil($face['w'] / 2);
                 $hh = ceil($face['h'] / 2);
-                $safeZone = array(
+                $safeZone = [
                     'left' => $face['x'] - $hw,
                     'right' => $face['x'] + $face['w'] + $hw,
                     'top' => $face['y'] - $hh,
                     'bottom' => $face['y'] + $face['h'] + $hh
-                );
+                ];
 
-                $safeZoneList[] = array(
+                $safeZoneList[] = [
                     'left' => round($safeZone['left'] / $xRatio),
                     'right' => round($safeZone['right'] / $xRatio),
                     'top' => round($safeZone['top'] / $yRatio),
                     'bottom' => round($safeZone['bottom'] / $yRatio),
-                );
+                ];
             }
             $this->safeZoneList[$key] = $safeZoneList;
         }

@@ -18,9 +18,11 @@
         }
     ],
     "require": {
-        "php": ">=5.3.0"
+        "php": ">=8.3.0",
+        "ext-imagick": "*",
+        "ext-gd": "*"
     },
     "autoload": {
-        "psr-0": { "drzippie\\crop": "src/" }
+        "psr-4": { "drzippie\\crop\\": "src/drzippie/crop/" }
     }
 }

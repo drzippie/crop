@@ -1,0 +1,70 @@
+name: Release to Packagist
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        extensions: imagick
+        
+    - name: Validate composer.json
+      run: composer validate --strict
+      
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --no-dev
+      
+    - name: Run tests
+      run: composer test
+      
+    - name: Run PHPStan
+      run: composer phpstan
+      
+    - name: Update Packagist
+      run: |
+        curl -X POST "https://packagist.org/api/update-package?username=${{ secrets.PACKAGIST_USERNAME }}&apiToken=${{ secrets.PACKAGIST_TOKEN }}" \
+             -d '{"repository":{"url":"https://github.com/drzippie/crop"}}'
+      
+    - name: Create release notes
+      run: |
+        echo "## Release Notes" > release_notes.md
+        echo "" >> release_notes.md
+        echo "### Changes in ${{ github.event.release.tag_name }}" >> release_notes.md
+        echo "" >> release_notes.md
+        echo "See [CHANGELOG.md](https://github.com/drzippie/crop/blob/master/CHANGELOG.md) for detailed changes." >> release_notes.md
+        echo "" >> release_notes.md
+        echo "### Installation" >> release_notes.md
+        echo "" >> release_notes.md
+        echo "\`\`\`bash" >> release_notes.md
+        echo "composer require drzippie/crop:^${{ github.event.release.tag_name }}" >> release_notes.md
+        echo "\`\`\`" >> release_notes.md
+        echo "" >> release_notes.md
+        echo "### Documentation" >> release_notes.md
+        echo "" >> release_notes.md
+        echo "- 📖 [GitHub Pages Documentation](https://drzippie.github.io/crop/)" >> release_notes.md
+        echo "- 📚 [API Reference](https://drzippie.github.io/crop/api/)" >> release_notes.md
+        echo "- 🚀 [Usage Examples](https://drzippie.github.io/crop/examples/)" >> release_notes.md
+        
+    - name: Update release description
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const releaseNotes = fs.readFileSync('release_notes.md', 'utf8');
+          
+          await github.rest.repos.updateRelease({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            release_id: context.payload.release.id,
+            body: releaseNotes
+          });

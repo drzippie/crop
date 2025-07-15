@@ -1,9 +1,9 @@
 {
-    "name": "stojg/crop",
+    "name": "drzippie/crop",
     "type": "library",
-    "description": "Image cropping classes",
-    "keywords": ["image"],
-    "homepage": "http://github.com/stojg/crop",
+    "description": "Image cropping classes - Fork of archived stojg/crop with modern improvements",
+    "keywords": ["image", "crop", "face-detection", "entropy", "php"],
+    "homepage": "https://github.com/drzippie/crop",
     "license": "BSD-2",
     "authors": [
         {

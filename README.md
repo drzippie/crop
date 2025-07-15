@@ -1,10 +1,13 @@
 # Crop
 
-This is a small set of image croppers that I created for testing automated cropping. 
+This is a maintained fork of the original [stojg/crop](https://github.com/stojg/crop) library, which was archived on April 30, 2021. This fork continues development and adds modern improvements.
 
-[![Build Status](https://secure.travis-ci.org/stojg/crop.png?branch=master)](http://travis-ci.org/stojg/crop)
-[![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/stojg/crop/badges/quality-score.png?s=3fb9e495961dba3ae96d96d7632236ef0227d3cb)](https://scrutinizer-ci.com/g/stojg/crop/)
-[![Code Coverage](https://scrutinizer-ci.com/g/stojg/crop/badges/coverage.png?s=cbd5ef15ca6f4f886bbcd88d45eb79cc861368cc)](https://scrutinizer-ci.com/g/stojg/crop/)
+**Key enhancements in this fork:**
+- ✅ Pure PHP face detection (no external extensions required)
+- ✅ Modernized dependencies and compatibility
+- ✅ Active maintenance and bug fixes
+
+This is a small set of image croppers for automated cropping with intelligent algorithms.
 
 ## Requirements
 

@@ -1,7 +1,7 @@
 {
     "name": "drzippie/crop",
     "type": "library",
-    "description": "Image cropping classes - Fork of archived stojg/crop with modern improvements",
+    "description": "Modern PHP library for intelligent image cropping with multiple algorithms",
     "keywords": ["image", "crop", "entropy", "php"],
     "homepage": "https://github.com/drzippie/crop",
     "license": "BSD-2-Clause",

@@ -4,7 +4,7 @@
     "description": "Image cropping classes - Fork of archived stojg/crop with modern improvements",
     "keywords": ["image", "crop", "face-detection", "entropy", "php"],
     "homepage": "https://github.com/drzippie/crop",
-    "license": "BSD-2",
+    "license": "BSD-2-Clause",
     "authors": [
         {
             "name": "Stig Lindqvist",
@@ -15,6 +15,10 @@
             "name": "Julien Deniau jdeniau",
             "email": "julien.deniau@gmail.com",
             "homepage": "http://www.mapado.com"
+        },
+        {
+            "name": "drzippie",
+            "homepage": "https://github.com/drzippie"
         }
     ],
     "require": {

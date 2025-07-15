@@ -201,6 +201,24 @@ abstract class Crop
     }
 
     /**
+     * Calculate entropy from simple array histogram
+     */
+    protected function getEntropyFromArray(array $histogram, int $area): float
+    {
+        $value = 0.0;
+        
+        foreach ($histogram as $count) {
+            // calculates the percentage of pixels having this color value
+            $p = $count / $area;
+            // A common way of representing entropy in scalar
+            $value = $value + $p * log($p, 2);
+        }
+        
+        // $value is always 0.0 or negative, so transform into positive scalar value
+        return -$value;
+    }
+
+    /**
      * Set base dimensions
      */
     protected function setBaseDimensions(int $width, int $height): self

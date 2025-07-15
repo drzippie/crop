@@ -22,7 +22,7 @@ class CropBalancedTest extends TestCase
     public function testConstructorWithImagePath(): void
     {
         $imagePath = $this->createTestImageFile();
-        $crop = new CropBalanced($imagePath);
+        $crop = new TestCropBalanced($imagePath);
         
         $this->assertInstanceOf(Imagick::class, $crop->getOriginalImage());
         $this->cleanupTestFile($imagePath);
@@ -199,6 +199,7 @@ class TestCropBalanced extends CropBalanced
     
     public function getOffsetBalancedForImage(Imagick $image, int $targetWidth, int $targetHeight): array
     {
+        $this->setImage($image);
         return $this->getOffsetBalanced($targetWidth, $targetHeight);
     }
     

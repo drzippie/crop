@@ -21,7 +21,7 @@ class CropEntropyTest extends TestCase
     public function testConstructorWithImagePath(): void
     {
         $imagePath = $this->createTestImageFile();
-        $crop = new CropEntropy($imagePath);
+        $crop = new TestCropEntropy($imagePath);
         
         $this->assertInstanceOf(Imagick::class, $crop->getOriginalImage());
         $this->cleanupTestFile($imagePath);

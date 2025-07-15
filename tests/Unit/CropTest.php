@@ -121,7 +121,7 @@ class CropTest extends TestCase
         $this->assertEquals(0.0, $result);
         
         $result = $this->crop->rgb2bw(255, 0, 0); // Red
-        $this->assertEquals(76.245, $result, '', 0.01);
+        $this->assertEqualsWithDelta(76.245, $result, 0.001);
     }
     
     public function testArea(): void

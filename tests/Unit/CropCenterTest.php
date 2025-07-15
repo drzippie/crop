@@ -21,7 +21,7 @@ class CropCenterTest extends TestCase
     public function testConstructorWithImagePath(): void
     {
         $imagePath = $this->createTestImageFile();
-        $crop = new CropCenter($imagePath);
+        $crop = new TestCropCenter($imagePath);
         
         $this->assertInstanceOf(Imagick::class, $crop->getOriginalImage());
         $this->cleanupTestFile($imagePath);
@@ -93,9 +93,6 @@ class CropCenterTest extends TestCase
     
     public function testMultipleCroppingSizes(): void
     {
-        $image = $this->createTestImageWithPattern(400, 300);
-        $this->cropCenter->setImage($image);
-        
         $sizes = [
             [100, 100],
             [150, 100],
@@ -104,7 +101,10 @@ class CropCenterTest extends TestCase
         ];
         
         foreach ($sizes as [$width, $height]) {
-            $result = $this->cropCenter->resizeAndCrop($width, $height);
+            $image = $this->createTestImageWithPattern(400, 300);
+            $cropCenter = new CropCenter();
+            $cropCenter->setImage($image);
+            $result = $cropCenter->resizeAndCrop($width, $height);
             $this->assertImageDimensions($result, $width, $height);
         }
     }

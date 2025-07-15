@@ -30,7 +30,7 @@ class CropFaceTest extends TestCase
     public function testConstructorWithImagePath(): void
     {
         $imagePath = $this->createTestImageFile();
-        $crop = new CropFace($imagePath);
+        $crop = new TestCropFace($imagePath);
         
         $this->assertInstanceOf(Imagick::class, $crop->getOriginalImage());
         $this->cleanupTestFile($imagePath);
@@ -142,8 +142,11 @@ class CropFaceTest extends TestCase
         ];
         
         foreach ($sizes as [$width, $height]) {
-            $result = $this->cropFace->resizeAndCrop($width, $height);
+            $imagePath = $this->createTestImageFile();
+            $cropFace = new CropFace($imagePath);
+            $result = $cropFace->resizeAndCrop($width, $height);
             $this->assertImageDimensions($result, $width, $height);
+            $this->cleanupTestFile($imagePath);
         }
     }
     

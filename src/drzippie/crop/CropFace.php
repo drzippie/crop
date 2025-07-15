@@ -1,8 +1,8 @@
 <?php
 
-namespace stojg\crop;
+namespace drzippie\crop;
 
-use stojg\crop\haar\HaarDetector;
+use drzippie\crop\haar\HaarDetector;
 
 /**
  * CropFace

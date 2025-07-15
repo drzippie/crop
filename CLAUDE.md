@@ -21,17 +21,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a PHP library for intelligent image cropping using ImageMagick. The library provides multiple cropping strategies through a class hierarchy:
 
 ### Core Classes
-- **`Crop`** (abstract base class): Contains shared functionality for all cropping strategies
+- **`drzippie\crop\Crop`** (abstract base class): Contains shared functionality for all cropping strategies
   - Image loading and basic operations
   - Profiling utilities
   - Entropy calculation methods
   - Base resize/crop workflow in `resizeAndCrop()`
 
 ### Cropping Strategies
-- **`CropCenter`**: Simple center-based cropping
-- **`CropEntropy`**: Crops based on image entropy (edge detection) to preserve high-energy areas
-- **`CropBalanced`**: Divides image into quadrants and finds weighted center of interest
-- **`CropFace`**: Extends CropEntropy but protects detected faces from being cropped out (uses pure PHP HAARPHP library)
+- **`drzippie\crop\CropCenter`**: Simple center-based cropping
+- **`drzippie\crop\CropEntropy`**: Crops based on image entropy (edge detection) to preserve high-energy areas
+- **`drzippie\crop\CropBalanced`**: Divides image into quadrants and finds weighted center of interest
+- **`drzippie\crop\CropFace`**: Extends CropEntropy but protects detected faces from being cropped out (uses pure PHP HAARPHP library)
 
 ### Key Architecture Patterns
 - **Template Method**: The base `Crop` class defines the overall workflow in `resizeAndCrop()`, while concrete classes implement `getSpecialOffset()` to provide their specific cropping logic

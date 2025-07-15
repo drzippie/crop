@@ -1,6 +1,6 @@
 <?php
 
-namespace stojg\crop\haar;
+namespace drzippie\crop\haar;
 
 /**
  * HaarDetector - Feature Detection Library for PHP

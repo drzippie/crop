@@ -1,10 +1,10 @@
 <?php
 
-require_once 'src/stojg/crop/Crop.php';
-require_once 'src/stojg/crop/CropCenter.php';
-require_once 'src/stojg/crop/CropEntropy.php';
+require_once 'src/drzippie/crop/Crop.php';
+require_once 'src/drzippie/crop/CropCenter.php';
+require_once 'src/drzippie/crop/CropEntropy.php';
 
-use stojg\crop\CropEntropy;
+use drzippie\crop\CropEntropy;
 
 class ClassEntropyTest extends PHPUnit_Framework_TestCase
 {

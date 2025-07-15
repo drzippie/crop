@@ -1,6 +1,6 @@
 <?php
 
-namespace stojg\crop\haar;
+namespace drzippie\crop\haar;
 
 /**
  * Haar Cascade XML to PHP Converter

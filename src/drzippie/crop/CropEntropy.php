@@ -1,6 +1,6 @@
 <?php
 
-namespace stojg\crop;
+namespace drzippie\crop;
 
 /**
  * SlyCropEntropy
